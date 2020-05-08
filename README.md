@@ -54,12 +54,13 @@ python project/manage.py runserver
 
 ### With Docker
 ```
-docker-compose run web sh -c "python project/manage.py test && flake8"
+docker-compose run web sh -c "cd project && python manage.py test && flake8"
 ```
 
 ### Without Docker
+Make sure to be in the /project/ directory
 ```
-python project/manage.py test && flake8
+python manage.py test && flake8
 ```
 
 ## Author
