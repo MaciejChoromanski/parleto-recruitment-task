@@ -5,6 +5,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    volumes:
+      - "./:/app/"
     command: >
       sh -c "python project/manage.py migrate &&
              python project/manage.py loaddata project/fixtures.json &&
