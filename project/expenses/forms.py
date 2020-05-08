@@ -3,8 +3,10 @@ from .models import Expense
 
 
 class ExpenseSearchForm(forms.ModelForm):
-    GROPING = ('date',)
-    grouping = forms.ChoiceField(choices=[('', '')] + list(zip(GROPING, GROPING)))
+    GROUPING = ('date',)
+    grouping = forms.ChoiceField(
+        choices=[('', '')] + list(zip(GROUPING, GROUPING))
+    )
 
     class Meta:
         model = Expense

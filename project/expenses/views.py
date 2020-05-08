@@ -31,4 +31,5 @@ class ExpenseListView(ListView):
             object_list=queryset,
             summary_per_category=summary_per_category(queryset),
             summary_per_year_month=summary_per_year_month(queryset),
-            **kwargs)
+            **kwargs
+        )
