@@ -18,9 +18,9 @@ class ExpenseListView(ListView):
             if name:
                 queryset = queryset.filter(name__icontains=name)
 
-            category = form.cleaned_data['category']
-            if category:
-                queryset = queryset.filter(category=category)
+            categories = form.cleaned_data['categories']
+            if categories:
+                queryset = queryset.filter(category__in=categories)
 
             date = form.cleaned_data['date']
             if date:

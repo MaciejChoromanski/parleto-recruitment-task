@@ -1,5 +1,5 @@
 from django import forms
-from .models import Expense
+from .models import Expense, Category
 
 
 class ExpenseSearchForm(forms.ModelForm):
@@ -7,10 +7,13 @@ class ExpenseSearchForm(forms.ModelForm):
     grouping = forms.ChoiceField(
         choices=[('', '')] + list(zip(GROUPING, GROUPING))
     )
+    categories = forms.ModelMultipleChoiceField(
+        widget=forms.CheckboxSelectMultiple, queryset=Category.objects.all()
+    )
 
     class Meta:
         model = Expense
-        fields = ('name', 'category', 'date',)
+        fields = ('name', 'date',)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
