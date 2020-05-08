@@ -22,6 +22,10 @@ class ExpenseListView(ListView):
             if category:
                 queryset = queryset.filter(category=category)
 
+            date = form.cleaned_data['date']
+            if date:
+                queryset = queryset.filter(date=date)
+
             grouping = form.cleaned_data['grouping']
             if grouping:
                 queryset = queryset.order_by('date', '-pk')

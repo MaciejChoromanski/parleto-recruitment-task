@@ -10,7 +10,7 @@ class ExpenseSearchForm(forms.ModelForm):
 
     class Meta:
         model = Expense
-        fields = ('name', 'category',)
+        fields = ('name', 'category', 'date',)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
