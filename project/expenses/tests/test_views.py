@@ -1,9 +1,9 @@
-from datetime import datetime, date
+from datetime import date
 
 from django.test import TestCase, Client
 from django.urls import reverse
 
-from .utils import create_test_categories, get_category
+from .utils import get_category, create_test_expenses
 from ..models import Expense
 
 EXPENSES_LIST = reverse('expenses:expense-list')
@@ -14,14 +14,7 @@ class ExpenseListViewTestCase(TestCase):
 
     def setUp(self) -> None:
         """Set up for the ExpenseListView tests"""
-        create_test_categories()
-        expenses = [
-            Expense(category=get_category('unnecessary'), name='Hybrid car',
-                    amount=1, date=datetime(2020, 5, 4)),
-            Expense(category=get_category('necessary'), name='Electric car',
-                    amount=1, date=datetime(2020, 5, 8)),
-        ]
-        Expense.objects.bulk_create(expenses)
+        create_test_expenses()
         self.client = Client()
 
     def test_get_context_data_no_date_provided(self) -> None:

@@ -1,8 +1,11 @@
 from collections import OrderedDict
+from decimal import Decimal
+from typing import Dict
 
 from django.db.models import Sum, Value
 from django.db.models.functions import TruncMonth
 from django.db.models.functions import Coalesce
+from django.db.models.query import QuerySet
 
 
 def summary_per_category(queryset):
@@ -27,3 +30,10 @@ def summary_per_year_month(queryset):
         .annotate(sum=Sum('amount'))
         .values_list('year_month', 'sum')
     ))
+
+
+def summary_overall(queryset: QuerySet) -> Dict[str, Decimal]:
+    """Summarizes how much money was spent"""
+    amount_sum = sum([value[0] for value in queryset.values_list('amount')])
+
+    return {'overall': amount_sum}
