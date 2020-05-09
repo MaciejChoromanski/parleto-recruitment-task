@@ -3,7 +3,7 @@ from datetime import date
 from django.test import TestCase, Client
 from django.urls import reverse
 
-from .utils import get_category, create_test_expenses, create_test_categories
+from .utils import get_category, create_test_expenses
 from ..models import Expense, Category
 
 EXPENSES_LIST = reverse('expenses:expense-list')
@@ -161,7 +161,7 @@ class CategoryListViewTestCase(TestCase):
 
     def setUp(self) -> None:
         """Set up for the CategoryListView tests"""
-        create_test_categories()
+        create_test_expenses()
         self.client = Client()
 
     def test_get_context_data_no_name_provided(self) -> None:
@@ -198,4 +198,23 @@ class CategoryListViewTestCase(TestCase):
         self.assertEqual(
             len(result.context[-1]['object_list']),
             Category.objects.all().count()
+        )
+
+    def test_get_context_data_expenses_attribute_creation(self) -> None:
+        """
+        Tests if get_context_data creates expenses attr for the categories
+        """
+        result = self.client.get(CATEGORIES_LIST)
+        self.assertTrue(
+            hasattr(result.context[-1]['object_list'][0], 'expenses')
+        )
+
+    def test_get_context_data_expenses_calculation(self) -> None:
+        """
+        Tests if get_context_data properly calculates expenses for a category
+        """
+        payload = {'name': 'unnecessary'}
+        result = self.client.get(CATEGORIES_LIST, payload)
+        self.assertEqual(
+            result.context[-1]['object_list'][0].expenses, 1
         )

@@ -98,6 +98,11 @@ class CategoryListView(ListView):
             if name:
                 queryset = queryset.filter(name__icontains=name)
 
+        for category in queryset:
+            category.expenses = Expense.objects.filter(
+                category__name=category.name
+            ).count()
+
         return super().get_context_data(
             form=form,
             object_list=queryset,
