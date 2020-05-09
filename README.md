@@ -57,6 +57,11 @@ python project/manage.py runserver
 docker-compose run web sh -c "cd project && python manage.py test && flake8"
 ```
 
+**Note**: Using the above command will create a new docker container with each run. It can provide some memory issues when development process is still running and the software is often tested. You can clear them all after some time with:
+```
+./remove_test_containers.sh
+```
+
 ### Without Docker
 Make sure to be in the /project/ directory
 ```
