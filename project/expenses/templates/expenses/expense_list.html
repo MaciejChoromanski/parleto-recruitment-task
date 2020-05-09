@@ -2,10 +2,11 @@
 
 {% block content %}
 
-<a href="{% url 'expenses:expense-create' %}">add</a>
+<a href="{% url 'expenses:expense-create' %}">Add expense</a>
+<a href="{% url 'expenses:category-list' %}">Categories</a>
 
 <form method="get" action="">
-  {{form.as_p}}
+  {{ form.as_p }}
   <button type="submit">search</button>
 </form>
 <br>

@@ -3,7 +3,7 @@ from typing import Tuple, Dict
 from django.db.models.query import QuerySet
 from django.views.generic.list import ListView
 
-from .forms import ExpenseSearchForm
+from .forms import ExpenseSearchForm, CategorySearchForm
 from .models import Expense, Category
 from .reports import (
     summary_per_category,
@@ -17,7 +17,7 @@ class ExpenseListView(ListView):
     paginate_by = 5
 
     def get_context_data(self, *, object_list=None, **kwargs) -> Dict:
-        """"""
+        """Returns context for the expenses list"""
         queryset = object_list if object_list is not None else self.object_list
 
         form = ExpenseSearchForm(self.request.GET)
@@ -87,3 +87,19 @@ class CategoryListView(ListView):
     """List view for the Categories"""
     model = Category
     paginate_by = 5
+
+    def get_context_data(self, *, object_list=None, **kwargs) -> Dict:
+        """Returns context for the categories list"""
+        queryset = object_list if object_list is not None else self.object_list
+
+        form = CategorySearchForm(self.request.GET)
+        if form.is_valid():
+            name = form.cleaned_data.get('name', '').strip()
+            if name:
+                queryset = queryset.filter(name__icontains=name)
+
+        return super().get_context_data(
+            form=form,
+            object_list=queryset,
+            **kwargs
+        )

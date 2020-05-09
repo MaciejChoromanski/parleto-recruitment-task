@@ -3,10 +3,11 @@ from datetime import date
 from django.test import TestCase, Client
 from django.urls import reverse
 
-from .utils import get_category, create_test_expenses
-from ..models import Expense
+from .utils import get_category, create_test_expenses, create_test_categories
+from ..models import Expense, Category
 
 EXPENSES_LIST = reverse('expenses:expense-list')
+CATEGORIES_LIST = reverse('expenses:category-list')
 
 
 class ExpenseListViewTestCase(TestCase):
@@ -152,4 +153,49 @@ class ExpenseListViewTestCase(TestCase):
         self.assertEqual(
             result.context[-1]['object_list'][0].date,
             date(2020, 5, 4)
+        )
+
+
+class CategoryListViewTestCase(TestCase):
+    """Tests for ExpenseListView"""
+
+    def setUp(self) -> None:
+        """Set up for the CategoryListView tests"""
+        create_test_categories()
+        self.client = Client()
+
+    def test_get_context_data_no_name_provided(self) -> None:
+        """
+        Tests what get_context_data returns when no name is provided
+        Expected result: all categories
+        """
+        payload = {'name': ''}
+        result = self.client.get(CATEGORIES_LIST, payload)
+        self.assertEqual(
+            len(result.context[-1]['object_list']),
+            Category.objects.all().count()
+        )
+
+    def test_get_context_data_name_provided(self) -> None:
+        """
+        Tests what get_context_data returns when name is provided
+        Expected result: categories with a given name
+        """
+        payload = {'name': 'unnecessary'}
+        result = self.client.get(CATEGORIES_LIST, payload)
+        self.assertEqual(
+            result.context[-1]['object_list'][0].name,
+            'unnecessary'
+        )
+
+    def test_get_context_data_name_partially_provided(self) -> None:
+        """
+        Tests what get_context_data returns when a part of a name is provided
+        Expected result: categories with names that contain a given name part
+        """
+        payload = {'name': 'nec'}
+        result = self.client.get(CATEGORIES_LIST, payload)
+        self.assertEqual(
+            len(result.context[-1]['object_list']),
+            Category.objects.all().count()
         )
