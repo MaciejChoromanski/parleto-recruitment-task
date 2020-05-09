@@ -29,15 +29,11 @@ class ExpenseListViewTestCase(TestCase):
         Tests what get_context_data returns when provided with no data
         Expected result: all expenses
         """
-        payload = {
-            'name': '',
-            'date': '',
-            'grouping': '',
-            'categories': [],
-        }
+        payload = {'date': ''}
         result = self.client.get(EXPENSES_LIST, payload)
         self.assertEqual(
-            len(result.context[-1]['object_list']), 2
+            len(result.context[-1]['object_list']),
+            Expense.objects.all().count()
         )
 
     def test_get_context_data_date_provided(self) -> None:
@@ -45,12 +41,7 @@ class ExpenseListViewTestCase(TestCase):
         Tests what get_context_data returns when provided with data
         Expected result: expense with a given data
         """
-        payload = {
-            'name': '',
-            'date': '2020-05-08',
-            'grouping': '',
-            'categories': [],
-        }
+        payload = {'date': '2020-05-08'}
         result = self.client.get(EXPENSES_LIST, payload)
         self.assertEqual(
             len(result.context[-1]['object_list']), 1
@@ -62,9 +53,6 @@ class ExpenseListViewTestCase(TestCase):
         Expected result: all expenses
         """
         payload = {
-            'name': '',
-            'date': '',
-            'grouping': '',
             'categories': [
                 get_category('unnecessary').id,
                 get_category('necessary').id
@@ -72,7 +60,8 @@ class ExpenseListViewTestCase(TestCase):
         }
         result = self.client.get(EXPENSES_LIST, payload)
         self.assertEqual(
-            len(result.context[-1]['object_list']), 2
+            len(result.context[-1]['object_list']),
+            Expense.objects.all().count()
         )
 
     def test_get_context_data_single_category_provided(self) -> None:
@@ -81,12 +70,33 @@ class ExpenseListViewTestCase(TestCase):
         Expected result: expenses with a given category
         """
         payload = {
-            'name': '',
-            'date': '',
-            'grouping': '',
-            'categories': [get_category('necessary').id],
+            'categories': [get_category('necessary').id]
         }
         result = self.client.get(EXPENSES_LIST, payload)
         self.assertEqual(
             len(result.context[-1]['object_list']), 1
+        )
+
+    def test_get_context_data_sort_by_provided_ascending(self) -> None:
+        """
+        Tests what get_context_data returns when provided with a sort_by: asc
+        Expected result: expenses sorted ascending by a sort_by
+        """
+        payload = {'sort_by': 'category: asc'}
+        result = self.client.get(EXPENSES_LIST, payload)
+        self.assertEqual(
+            result.context[-1]['object_list'][0].category,
+            get_category('necessary')
+        )
+
+    def test_get_context_data_sort_by_provided_descending(self) -> None:
+        """
+        Tests what get_context_data returns when provided with a sort_by: desc
+        Expected result: expenses sorted descending by a sort_by
+        """
+        payload = {'sort_by': 'category: desc'}
+        result = self.client.get(EXPENSES_LIST, payload)
+        self.assertEqual(
+            result.context[-1]['object_list'][0].category,
+            get_category('unnecessary')
         )

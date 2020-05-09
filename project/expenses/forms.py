@@ -1,15 +1,32 @@
+from typing import Union, List, Tuple
+
 from django import forms
 from .models import Expense, Category
 
 
+def _get_choices(choices: Union[str, list]) -> List[Tuple[str, str]]:
+    """Returns list of choices, used for the ChoiceFields"""
+    result = [('', '')]
+    if isinstance(choices, str):
+        result.append((choices, choices))
+    else:
+        for choice in choices:
+            result.append((choice, choice))
+
+    return result
+
+
 class ExpenseSearchForm(forms.ModelForm):
-    GROUPING = ('date',)
-    grouping = forms.ChoiceField(
-        choices=[('', '')] + list(zip(GROUPING, GROUPING))
-    )
     categories = forms.ModelMultipleChoiceField(
         widget=forms.CheckboxSelectMultiple, queryset=Category.objects.all()
     )
+    sort_by = forms.ChoiceField(
+        choices=_get_choices(
+            ['category: asc', 'category: desc',
+             'date: asc', 'date: desc']
+        )
+    )
+    group_by = forms.ChoiceField(choices=_get_choices('date'))
 
     class Meta:
         model = Expense

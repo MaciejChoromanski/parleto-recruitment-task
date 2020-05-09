@@ -15,12 +15,7 @@ class ExpenseSearchFormTestCase(TestCase):
         """
         TTests if a form is valid when provided with valid format of date
         """
-        data = {
-            'name': 'Nintendo DS',
-            'date': '2020-05-08',
-            'grouping': '',
-            'categories': [],
-        }
+        data = {'date': '2020-05-08'}
         form = ExpenseSearchForm(data=data)
         self.assertTrue(form.is_valid())
 
@@ -28,12 +23,7 @@ class ExpenseSearchFormTestCase(TestCase):
         """
         Tests if a form is invalid when provided with invalid format of date
         """
-        data = {
-            'name': 'Colecovision',
-            'date': '08-05-2020',
-            'grouping': '',
-            'categories': [],
-        }
+        data = {'date': '08-05-2020'}
         form = ExpenseSearchForm(data=data)
         self.assertFalse(form.is_valid())
 
@@ -42,9 +32,6 @@ class ExpenseSearchFormTestCase(TestCase):
         Tests if a form is valid when provided with multiple categories
         """
         data = {
-            'name': '2001 Okana Gamesphere',
-            'date': '',
-            'grouping': '',
             'categories': [
                 get_category('unnecessary').id,
                 get_category('necessary').id
@@ -58,10 +45,23 @@ class ExpenseSearchFormTestCase(TestCase):
         Tests if a form is valid when provided with a single category
         """
         data = {
-            'name': 'PlayStation Portable',
-            'date': '',
-            'grouping': '',
             'categories': [get_category('necessary').id],
         }
         form = ExpenseSearchForm(data=data)
         self.assertTrue(form.is_valid())
+
+    def test_form_validation_valid_sort_by_provided(self) -> None:
+        """
+        Tests if a form is valid when provided with a valid sort_by
+        """
+        data = {'sort_by': 'category: asc'}
+        form = ExpenseSearchForm(data=data)
+        self.assertTrue(form.is_valid())
+
+    def test_form_validation_invalid_sort_by_provided(self) -> None:
+        """
+        Tests if a form is invalid when provided with a invalid sort_by
+        """
+        data = {'sort_by': 'not supported: also'}
+        form = ExpenseSearchForm(data=data)
+        self.assertFalse(form.is_valid())
