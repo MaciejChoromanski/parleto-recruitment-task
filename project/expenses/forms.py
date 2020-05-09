@@ -17,16 +17,16 @@ def _get_choices(choices: Union[str, list]) -> List[Tuple[str, str]]:
 
 
 class ExpenseSearchForm(forms.ModelForm):
+    CATEGORIES = ['category: asc', 'category: desc']
     categories = forms.ModelMultipleChoiceField(
         widget=forms.CheckboxSelectMultiple, queryset=Category.objects.all()
     )
     sort_by = forms.ChoiceField(
-        choices=_get_choices(
-            ['category: asc', 'category: desc',
-             'date: asc', 'date: desc']
-        )
+        choices=_get_choices(CATEGORIES + ['date: asc', 'date: desc'])
     )
-    group_by = forms.ChoiceField(choices=_get_choices('date'))
+    group_by = forms.ChoiceField(
+        choices=_get_choices(CATEGORIES + ['date'])
+    )
 
     class Meta:
         model = Expense

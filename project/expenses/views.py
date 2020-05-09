@@ -1,3 +1,6 @@
+from typing import Tuple
+
+from django.db.models.query import QuerySet
 from django.views.generic.list import ListView
 
 from .forms import ExpenseSearchForm
@@ -27,17 +30,10 @@ class ExpenseListView(ListView):
                 queryset = queryset.filter(date=date)
 
             sort_by = form.cleaned_data['sort_by']
-            if sort_by:
-                sort_params = sort_by.split(':')
-                prefix = '' if sort_params[1].strip() == 'asc' else '-'
-                if sort_params[0] == 'category':
-                    queryset = queryset.order_by(f'{prefix}category__name')
-                else:
-                    queryset = queryset.order_by(f'{prefix}date')
+            queryset = self._get_ordered_queryset(queryset, sort_by)
 
             group_by = form.cleaned_data['group_by']
-            if group_by:
-                queryset = queryset.order_by(group_by, '-pk')
+            queryset = self._get_ordered_queryset(queryset, group_by, '-pk')
 
         return super().get_context_data(
             form=form,
@@ -46,3 +42,36 @@ class ExpenseListView(ListView):
             summary_per_year_month=summary_per_year_month(queryset),
             **kwargs
         )
+
+    @staticmethod
+    def _get_params(param_str: str) -> Tuple[str, str]:
+        """Return params for sorting and grouping operations"""
+        if not param_str:
+            return '', ''
+
+        sort_params = param_str.split(':')
+        if len(sort_params) == 1:
+            return '', sort_params[0]
+
+        prefix = '' if sort_params[1].strip() == 'asc' else '-'
+
+        return prefix, sort_params[0]
+
+    def _get_ordered_queryset(
+            self, queryset: QuerySet, order_params: str, *ordering: str
+    ) -> QuerySet:
+        """
+        Returns ordered queryset or the same queryset
+        if no ordering was requested
+        """
+        prefix, category = self._get_params(order_params)
+        if category == 'category':
+            return queryset.order_by(
+                f'{prefix}category__name', *ordering
+            )
+        elif category == 'date':
+            return queryset.order_by(
+                f'{prefix}date', *ordering
+            )
+        else:
+            return queryset

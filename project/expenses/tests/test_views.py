@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, date
 
 from django.test import TestCase, Client
 from django.urls import reverse
@@ -77,10 +77,10 @@ class ExpenseListViewTestCase(TestCase):
             len(result.context[-1]['object_list']), 1
         )
 
-    def test_get_context_data_sort_by_provided_ascending(self) -> None:
+    def test_get_context_data_sort_by_category_and_ascending(self) -> None:
         """
-        Tests what get_context_data returns when provided with a sort_by: asc
-        Expected result: expenses sorted ascending by a sort_by
+        Tests what get_context_data returns when sort_by = 'category: asc'
+        Expected result: expenses sorted ascending by a category
         """
         payload = {'sort_by': 'category: asc'}
         result = self.client.get(EXPENSES_LIST, payload)
@@ -89,14 +89,74 @@ class ExpenseListViewTestCase(TestCase):
             get_category('necessary')
         )
 
-    def test_get_context_data_sort_by_provided_descending(self) -> None:
+    def test_get_context_data_sort_by_category_and_descending(self) -> None:
         """
-        Tests what get_context_data returns when provided with a sort_by: desc
-        Expected result: expenses sorted descending by a sort_by
+        Tests what get_context_data returns when sort_by = 'category: desc'
+        Expected result: expenses sorted descending by a category
         """
         payload = {'sort_by': 'category: desc'}
         result = self.client.get(EXPENSES_LIST, payload)
         self.assertEqual(
             result.context[-1]['object_list'][0].category,
             get_category('unnecessary')
+        )
+
+    def test_get_context_data_sort_by_date_and_ascending(self) -> None:
+        """
+        Tests what get_context_data returns when sort_by = 'date: asc'
+        Expected result: expenses sorted ascending by a date
+        """
+        payload = {'sort_by': 'date: asc'}
+        result = self.client.get(EXPENSES_LIST, payload)
+        self.assertEqual(
+            result.context[-1]['object_list'][0].date,
+            date(2020, 5, 4)
+        )
+
+    def test_get_context_data_sort_by_date_and_descending(self) -> None:
+        """
+        Tests what get_context_data returns when sort_by = 'date: desc'
+        Expected result: expenses sorted descending by a date
+        """
+        payload = {'sort_by': 'date: desc'}
+        result = self.client.get(EXPENSES_LIST, payload)
+        self.assertEqual(
+            result.context[-1]['object_list'][0].date,
+            date(2020, 5, 8)
+        )
+
+    def test_get_context_data_group_by_category_ascending(self) -> None:
+        """
+        Tests what get_context_data returns when group_by = 'category: asc'
+        Expected result: expenses grouped ascending by a category
+        """
+        payload = {'group_by': 'category: asc'}
+        result = self.client.get(EXPENSES_LIST, payload)
+        self.assertEqual(
+            result.context[-1]['object_list'][0].category,
+            get_category('necessary')
+        )
+
+    def test_get_context_data_group_by_category_descending(self) -> None:
+        """
+        Tests what get_context_data returns when group_by = 'category: desc'
+        Expected result: expenses grouped descending by a category
+        """
+        payload = {'group_by': 'category: desc'}
+        result = self.client.get(EXPENSES_LIST, payload)
+        self.assertEqual(
+            result.context[-1]['object_list'][0].category,
+            get_category('unnecessary')
+        )
+
+    def test_get_context_data_group_by_date(self) -> None:
+        """
+        Tests what get_context_data returns when group_by = 'date'
+        Expected result: expenses grouped ascending by a date
+        """
+        payload = {'group_by': 'date'}
+        result = self.client.get(EXPENSES_LIST, payload)
+        self.assertEqual(
+            result.context[-1]['object_list'][0].date,
+            date(2020, 5, 4)
         )
