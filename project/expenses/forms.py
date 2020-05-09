@@ -17,6 +17,7 @@ def _get_choices(choices: Union[str, list]) -> List[Tuple[str, str]]:
 
 
 class ExpenseSearchForm(forms.ModelForm):
+    """Form for searching for Expenses"""
     CATEGORIES = ['category: asc', 'category: desc']
     categories = forms.ModelMultipleChoiceField(
         widget=forms.CheckboxSelectMultiple, queryset=Category.objects.all()

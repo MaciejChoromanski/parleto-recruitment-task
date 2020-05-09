@@ -1,10 +1,10 @@
-from typing import Tuple
+from typing import Tuple, Dict
 
 from django.db.models.query import QuerySet
 from django.views.generic.list import ListView
 
 from .forms import ExpenseSearchForm
-from .models import Expense
+from .models import Expense, Category
 from .reports import (
     summary_per_category,
     summary_per_year_month,
@@ -16,7 +16,8 @@ class ExpenseListView(ListView):
     model = Expense
     paginate_by = 5
 
-    def get_context_data(self, *, object_list=None, **kwargs):
+    def get_context_data(self, *, object_list=None, **kwargs) -> Dict:
+        """"""
         queryset = object_list if object_list is not None else self.object_list
 
         form = ExpenseSearchForm(self.request.GET)
@@ -80,3 +81,9 @@ class ExpenseListView(ListView):
             )
         else:
             return queryset
+
+
+class CategoryListView(ListView):
+    """List view for the Categories"""
+    model = Category
+    paginate_by = 5
