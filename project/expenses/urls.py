@@ -39,5 +39,13 @@ urlpatterns = [
              template_name='expenses/model_form.html',
              success_url=reverse_lazy('expenses:category-list')
          ),
-         name='category-create')
+         name='category-create'),
+    path('category/<int:pk>/edit/',
+         UpdateView.as_view(
+             model=Category,
+             fields='__all__',
+             template_name='expenses/model_form.html',
+             success_url=reverse_lazy('expenses:category-list')
+         ),
+         name='category-edit'),
 ]

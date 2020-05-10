@@ -3,16 +3,13 @@ from datetime import date
 from django.test import TestCase, Client
 from django.urls import reverse
 
-from .utils import get_category, create_test_expenses
+from .utils import get_category, create_test_expenses, create_test_categories
 from ..models import Expense, Category
-
-EXPENSES_LIST = reverse('expenses:expense-list')
-CATEGORIES_LIST = reverse('expenses:category-list')
-CATEGORIES_CREATE = reverse('expenses:category-create')
 
 
 class ExpenseListViewTestCase(TestCase):
     """Tests for ExpenseListView"""
+    EXPENSE_LIST = reverse('expenses:expense-list')
 
     def setUp(self) -> None:
         """Set up for the ExpenseListView tests"""
@@ -25,7 +22,7 @@ class ExpenseListViewTestCase(TestCase):
         Expected result: all expenses
         """
         payload = {'date': ''}
-        result = self.client.get(EXPENSES_LIST, payload)
+        result = self.client.get(self.EXPENSE_LIST, payload)
         self.assertEqual(
             len(result.context[-1]['object_list']),
             Expense.objects.all().count()
@@ -37,7 +34,7 @@ class ExpenseListViewTestCase(TestCase):
         Expected result: expense with a given data
         """
         payload = {'date': '2020-05-08'}
-        result = self.client.get(EXPENSES_LIST, payload)
+        result = self.client.get(self.EXPENSE_LIST, payload)
         self.assertEqual(
             len(result.context[-1]['object_list']), 1
         )
@@ -53,7 +50,7 @@ class ExpenseListViewTestCase(TestCase):
                 get_category('necessary').id
             ],
         }
-        result = self.client.get(EXPENSES_LIST, payload)
+        result = self.client.get(self.EXPENSE_LIST, payload)
         self.assertEqual(
             len(result.context[-1]['object_list']),
             Expense.objects.all().count()
@@ -67,7 +64,7 @@ class ExpenseListViewTestCase(TestCase):
         payload = {
             'categories': [get_category('necessary').id]
         }
-        result = self.client.get(EXPENSES_LIST, payload)
+        result = self.client.get(self.EXPENSE_LIST, payload)
         self.assertEqual(
             len(result.context[-1]['object_list']), 1
         )
@@ -78,7 +75,7 @@ class ExpenseListViewTestCase(TestCase):
         Expected result: expenses sorted ascending by a category
         """
         payload = {'sort_by': 'category: asc'}
-        result = self.client.get(EXPENSES_LIST, payload)
+        result = self.client.get(self.EXPENSE_LIST, payload)
         self.assertEqual(
             result.context[-1]['object_list'][0].category,
             get_category('necessary')
@@ -90,7 +87,7 @@ class ExpenseListViewTestCase(TestCase):
         Expected result: expenses sorted descending by a category
         """
         payload = {'sort_by': 'category: desc'}
-        result = self.client.get(EXPENSES_LIST, payload)
+        result = self.client.get(self.EXPENSE_LIST, payload)
         self.assertEqual(
             result.context[-1]['object_list'][0].category,
             get_category('unnecessary')
@@ -102,7 +99,7 @@ class ExpenseListViewTestCase(TestCase):
         Expected result: expenses sorted ascending by a date
         """
         payload = {'sort_by': 'date: asc'}
-        result = self.client.get(EXPENSES_LIST, payload)
+        result = self.client.get(self.EXPENSE_LIST, payload)
         self.assertEqual(
             result.context[-1]['object_list'][0].date,
             date(2020, 5, 4)
@@ -114,7 +111,7 @@ class ExpenseListViewTestCase(TestCase):
         Expected result: expenses sorted descending by a date
         """
         payload = {'sort_by': 'date: desc'}
-        result = self.client.get(EXPENSES_LIST, payload)
+        result = self.client.get(self.EXPENSE_LIST, payload)
         self.assertEqual(
             result.context[-1]['object_list'][0].date,
             date(2020, 5, 8)
@@ -126,7 +123,7 @@ class ExpenseListViewTestCase(TestCase):
         Expected result: expenses grouped ascending by a category
         """
         payload = {'group_by': 'category: asc'}
-        result = self.client.get(EXPENSES_LIST, payload)
+        result = self.client.get(self.EXPENSE_LIST, payload)
         self.assertEqual(
             result.context[-1]['object_list'][0].category,
             get_category('necessary')
@@ -138,7 +135,7 @@ class ExpenseListViewTestCase(TestCase):
         Expected result: expenses grouped descending by a category
         """
         payload = {'group_by': 'category: desc'}
-        result = self.client.get(EXPENSES_LIST, payload)
+        result = self.client.get(self.EXPENSE_LIST, payload)
         self.assertEqual(
             result.context[-1]['object_list'][0].category,
             get_category('unnecessary')
@@ -150,7 +147,7 @@ class ExpenseListViewTestCase(TestCase):
         Expected result: expenses grouped ascending by a date
         """
         payload = {'group_by': 'date'}
-        result = self.client.get(EXPENSES_LIST, payload)
+        result = self.client.get(self.EXPENSE_LIST, payload)
         self.assertEqual(
             result.context[-1]['object_list'][0].date,
             date(2020, 5, 4)
@@ -159,6 +156,7 @@ class ExpenseListViewTestCase(TestCase):
 
 class CategoryListViewTestCase(TestCase):
     """Tests for ExpenseListView"""
+    CATEGORY_LIST = reverse('expenses:category-list')
 
     def setUp(self) -> None:
         """Set up for the CategoryListView tests"""
@@ -171,7 +169,7 @@ class CategoryListViewTestCase(TestCase):
         Expected result: all categories
         """
         payload = {'name': ''}
-        result = self.client.get(CATEGORIES_LIST, payload)
+        result = self.client.get(self.CATEGORY_LIST, payload)
         self.assertEqual(
             len(result.context[-1]['object_list']),
             Category.objects.all().count()
@@ -183,7 +181,7 @@ class CategoryListViewTestCase(TestCase):
         Expected result: categories with a given name
         """
         payload = {'name': 'unnecessary'}
-        result = self.client.get(CATEGORIES_LIST, payload)
+        result = self.client.get(self.CATEGORY_LIST, payload)
         self.assertEqual(
             result.context[-1]['object_list'][0].name,
             'unnecessary'
@@ -195,7 +193,7 @@ class CategoryListViewTestCase(TestCase):
         Expected result: categories with names that contain a given name part
         """
         payload = {'name': 'nec'}
-        result = self.client.get(CATEGORIES_LIST, payload)
+        result = self.client.get(self.CATEGORY_LIST, payload)
         self.assertEqual(
             len(result.context[-1]['object_list']),
             Category.objects.all().count()
@@ -205,7 +203,7 @@ class CategoryListViewTestCase(TestCase):
         """
         Tests if get_context_data creates expenses attr for the categories
         """
-        result = self.client.get(CATEGORIES_LIST)
+        result = self.client.get(self.CATEGORY_LIST)
         self.assertTrue(
             hasattr(result.context[-1]['object_list'][0], 'expenses')
         )
@@ -215,7 +213,7 @@ class CategoryListViewTestCase(TestCase):
         Tests if get_context_data properly calculates expenses for a category
         """
         payload = {'name': 'unnecessary'}
-        result = self.client.get(CATEGORIES_LIST, payload)
+        result = self.client.get(self.CATEGORY_LIST, payload)
         self.assertEqual(
             result.context[-1]['object_list'][0].expenses, 1
         )
@@ -223,27 +221,55 @@ class CategoryListViewTestCase(TestCase):
 
 class CategoryCreateViewTestCase(TestCase):
     """Tests for CreateView, which uses Category model"""
+    CATEGORY_CREATE = reverse('expenses:category-create')
 
     def setUp(self) -> None:
         """Set up for tests of CreateView, which uses Category model"""
         self.client = Client()
 
-    def test_creating_category_category_created_properly(self) -> None:
-        """
-        Tests if a Category is created properly
-        """
+    def test_creating_category_category_created(self) -> None:
+        """Tests if a Category is created properly"""
         payload = {'name': 'category'}
-        self.client.post(CATEGORIES_CREATE, payload)
+        self.client.post(self.CATEGORY_CREATE, payload)
         self.assertEqual(
             Category.objects.all().count(), 1
         )
 
     def test_creating_category_name_not_provided(self) -> None:
-        """
-        Tests if a form is invalid when name is not provided
-        """
+        """Tests if a Category is not created when no name is provided"""
         payload = {'name': ''}
-        self.client.post(CATEGORIES_CREATE, payload)
+        self.client.post(self.CATEGORY_CREATE, payload)
         self.assertEqual(
             Category.objects.all().count(), 0
         )
+
+
+class CategoryUpdateViewTestCase(TestCase):
+    """Tests for UpdateView, which uses Category model"""
+
+    def setUp(self) -> None:
+        """Set up for tests of UpdateView, which uses Category model"""
+        create_test_categories()
+        self.client = Client()
+
+    def test_updating_category_category_updated(self) -> None:
+        """Tests if a Category is updated properly"""
+        category = Category.objects.first()
+        payload = {'name': 'new name'}
+        self.client.post(self._get_url(category.id), payload)
+        category.refresh_from_db()
+        self.assertEqual(category.name, 'new name')
+
+    def test_updating_category_name_not_provided(self) -> None:
+        """Tests if a Category is not updated when no name is provided"""
+        category = Category.objects.first()
+        category_name = category.name
+        payload = {'name': ''}
+        self.client.post(self._get_url(category.id), payload)
+        category.refresh_from_db()
+        self.assertEqual(category.name, category_name)
+
+    @staticmethod
+    def _get_url(pk: int) -> str:
+        """Returns url for editing a Category with a given pk"""
+        return reverse('expenses:category-edit', kwargs={'pk': pk})
