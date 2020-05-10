@@ -8,6 +8,7 @@ from ..models import Expense, Category
 
 EXPENSES_LIST = reverse('expenses:expense-list')
 CATEGORIES_LIST = reverse('expenses:category-list')
+CATEGORIES_CREATE = reverse('expenses:category-create')
 
 
 class ExpenseListViewTestCase(TestCase):
@@ -217,4 +218,32 @@ class CategoryListViewTestCase(TestCase):
         result = self.client.get(CATEGORIES_LIST, payload)
         self.assertEqual(
             result.context[-1]['object_list'][0].expenses, 1
+        )
+
+
+class CategoryCreateViewTestCase(TestCase):
+    """Tests for CreateView, which uses Category model"""
+
+    def setUp(self) -> None:
+        """Set up for tests of CreateView, which uses Category model"""
+        self.client = Client()
+
+    def test_creating_category_category_created_properly(self) -> None:
+        """
+        Tests if a Category is created properly
+        """
+        payload = {'name': 'category'}
+        self.client.post(CATEGORIES_CREATE, payload)
+        self.assertEqual(
+            Category.objects.all().count(), 1
+        )
+
+    def test_creating_category_name_not_provided(self) -> None:
+        """
+        Tests if a form is invalid when name is not provided
+        """
+        payload = {'name': ''}
+        self.client.post(CATEGORIES_CREATE, payload)
+        self.assertEqual(
+            Category.objects.all().count(), 0
         )

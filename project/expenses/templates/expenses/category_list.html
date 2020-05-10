@@ -2,7 +2,7 @@
 
 {% block content %}
 
-<a href="#">Add category</a>
+<a href="{% url 'expenses:category-create' %}">Add category</a>
 <a href="{% url 'expenses:expense-list' %}">Expenses</a>
 
 <form method="get" action="">
