@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<a href="{% url 'expenses:category-list' %}">Categories</a>
+
+<h1>Category</h1>
+<h2>Id: <strong>{{ category.id }}</strong></h2>
+<h2>Name: <strong>{{ category.name }}</strong></h2>
+<h2>Expenses: <strong>{{ categories_expenses }}</strong></h2>
+{% if summary_per_year_month %}
+<h2>Summary per year/month:</h2>
+  <table border="1">
+    <tr>
+      {% for year_month, total in summary_per_year_month.items %}<td>{{year_month|date:"Y-m"}}: {{total|floatformat:2}}</td>{% endfor %}
+    </tr>
+  </table>
+{% else %}
+  <h2>Summary per year/month: <strong>0</strong></h2>
+{% endif %}
+<br/>
+<h3>Options:</h3>
+<button>
+  <a href="{% url 'expenses:category-edit' category.id %}">edit</a>
+</button>
+<button>
+  <a href="{% url 'expenses:category-delete' category.id %}">delete</a>
+</button>
+
+{% endblock %}

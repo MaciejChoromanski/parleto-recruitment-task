@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<a href="{% url 'expenses:category-create' %}">Add category</a>
+<a href="{% url 'expenses:expense-list' %}">Expenses</a>
+
+<form method="get" action="">
+  {{ form.as_p }}
+  <button type="submit">search</button>
+</form>
+<br/>
+<table border="1">
+    <thead>
+      <tr>
+        <th>no.</th>
+        <th>name</th>
+        <th>expenses</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for obj in object_list %}
+      <tr>
+        <td>{{ page_obj.start_index|add:forloop.counter0 }}.</td>
+        <td>
+            <a href="{% url 'expenses:category-detail' obj.id %}">
+                {{ obj.name|default:"-" }}
+            </a>
+        </td>
+        <td>{{ obj.expenses|default:"0" }}</td>
+        <td>
+          <a href="{% url 'expenses:category-edit' obj.id %}">edit</a>
+          <a href="{% url 'expenses:category-delete' obj.id %}">delete</a>
+        </td>
+      </tr>
+    {% empty %}
+      <tr>
+        <td colspan="6">no items</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+</table>
+<br/>
+
+{% include "_pagination.html" %}
+
+{% endblock %}

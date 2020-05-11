@@ -8,7 +8,8 @@ from django.db.models.functions import Coalesce
 from django.db.models.query import QuerySet
 
 
-def summary_per_category(queryset):
+def summary_per_category(queryset) -> OrderedDict:
+    """Summarizes how much money was spend in different categories"""
     return OrderedDict(sorted(
         queryset
         .annotate(category_name=Coalesce('category__name', Value('-')))
@@ -19,7 +20,8 @@ def summary_per_category(queryset):
     ))
 
 
-def summary_per_year_month(queryset):
+def summary_per_year_month(queryset) -> OrderedDict:
+    """Summarizes how much money was spent in different months"""
     return OrderedDict(sorted(
         queryset
         .annotate(

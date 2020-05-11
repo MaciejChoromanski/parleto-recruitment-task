@@ -2,10 +2,11 @@
 
 {% block content %}
 
-<a href="{% url 'expenses:expense-create' %}">add</a>
+<a href="{% url 'expenses:expense-create' %}">Add expense</a>
+<a href="{% url 'expenses:category-list' %}">Categories</a>
 
 <form method="get" action="">
-  {{form.as_p}}
+  {{ form.as_p }}
   <button type="submit">search</button>
 </form>
 <br>
@@ -38,7 +39,11 @@
       {% endif %}
       <tr>
         <td>{{ page_obj.start_index|add:forloop.counter0 }}.</td>
-        <td>{{ obj.category|default:"-" }}</td>
+        <td>
+          <a href="{% url 'expenses:category-detaild' obj.category.id %}">
+            {{ obj.category|default:"-" }}
+          </a>
+        </td>
         <td>{{ obj.name|default:"-" }}</td>
         <td>{{ obj.amount|floatformat:2 }}</td>
         <td>
@@ -67,7 +72,11 @@
     {% for obj in object_list %}
       <tr>
         <td>{{ page_obj.start_index|add:forloop.counter0 }}.</td>
-        <td>{{ obj.category|default:"-" }}</td>
+        <td>
+          <a href="{% url 'expenses:category-detail' obj.category.id %}">
+            {{ obj.category|default:"-" }}
+          </a>
+        </td>
         <td>{{ obj.name|default:"-" }}</td>
         <td>{{ obj.date }}</td>
         <td>{{ obj.amount|floatformat:2 }}</td>

@@ -1,22 +1,30 @@
-from typing import Tuple
+from typing import Tuple, Dict
 
+from django.core.handlers.wsgi import WSGIRequest
 from django.db.models.query import QuerySet
+from django.http import HttpResponseRedirect
+from django.views.generic import DeleteView, DetailView
 from django.views.generic.list import ListView
 
-from .forms import ExpenseSearchForm
-from .models import Expense
+from .forms import ExpenseSearchForm, CategorySearchForm
+from .models import Expense, Category
 from .reports import (
     summary_per_category,
     summary_per_year_month,
     summary_overall,
 )
+from .utils import get_expenses_amount
 
 
 class ExpenseListView(ListView):
+    """List view for Expense model"""
     model = Expense
     paginate_by = 5
 
-    def get_context_data(self, *, object_list=None, **kwargs):
+    def get_context_data(
+            self, *, object_list: QuerySet = None, **kwargs
+    ) -> Dict:
+        """Returns context for the expenses list"""
         queryset = object_list if object_list is not None else self.object_list
 
         form = ExpenseSearchForm(self.request.GET)
@@ -80,3 +88,67 @@ class ExpenseListView(ListView):
             )
         else:
             return queryset
+
+
+class CategoryListView(ListView):
+    """List view for the Category model"""
+    model = Category
+    paginate_by = 5
+
+    def get_context_data(self, *, object_list=None, **kwargs) -> Dict:
+        """Returns context for the categories list"""
+        queryset = object_list if object_list is not None else self.object_list
+
+        form = CategorySearchForm(self.request.GET)
+        if form.is_valid():
+            name = form.cleaned_data.get('name', '').strip()
+            if name:
+                queryset = queryset.filter(name__icontains=name)
+
+        for category in queryset:
+            category.expenses = get_expenses_amount(category)
+
+        return super().get_context_data(
+            form=form,
+            object_list=queryset,
+            **kwargs
+        )
+
+
+class CategoryDeleteView(DeleteView):
+    """Delete view for the Category"""
+    model = Category
+    template_name = 'expenses/model_delete.html'
+
+    def get_context_data(self, **kwargs) -> Dict:
+        """Returns context for the category deletion"""
+        return super().get_context_data(
+            categories_expenses=get_expenses_amount(self.get_object()),
+            **kwargs
+        )
+
+    def delete(
+            self, request: WSGIRequest, *args, **kwargs
+    ) -> HttpResponseRedirect:
+        """Deletes all Expenses related to deleted Category"""
+        Expense.objects.filter(category=self.get_object()).delete()
+
+        return super().delete(request, *args, **kwargs)
+
+
+class CategoryDetailView(DetailView):
+    """Detail view for the Category"""
+    model = Category
+    template_name = 'expenses/category_detail.html'
+
+    def get_context_data(self, **kwargs) -> Dict:
+        """Returns context for the category deletion"""
+        category = self.get_object()
+        queryset = Expense.objects.filter(category=category)
+
+        return super().get_context_data(
+            category=category,
+            categories_expenses=get_expenses_amount(self.get_object()),
+            summary_per_year_month=summary_per_year_month(queryset),
+            **kwargs
+        )

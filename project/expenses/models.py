@@ -4,6 +4,7 @@ from django.db import models
 
 
 class Category(models.Model):
+    """Model for expenses categories"""
     name = models.CharField(max_length=50, unique=True)
 
     def __str__(self):
@@ -11,6 +12,8 @@ class Category(models.Model):
 
 
 class Expense(models.Model):
+    """Model for the expenses"""
+
     class Meta:
         ordering = ('-date', '-pk')
 

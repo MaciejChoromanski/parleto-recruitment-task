@@ -1,7 +1,7 @@
 from django.test import TestCase
 
 from .utils import create_test_categories, get_category
-from ..forms import ExpenseSearchForm
+from ..forms import ExpenseSearchForm, CategorySearchForm
 
 
 class ExpenseSearchFormTestCase(TestCase):
@@ -65,3 +65,15 @@ class ExpenseSearchFormTestCase(TestCase):
         data = {'sort_by': 'not supported: also'}
         form = ExpenseSearchForm(data=data)
         self.assertFalse(form.is_valid())
+
+
+class CategorySearchFormTestCase(TestCase):
+    """Tests for CategorySearchForm"""
+
+    def test_form_validation_name_provided(self) -> None:
+        """
+        Tests if a form is valid when provided with a name
+        """
+        data = {'name': 'category'}
+        form = CategorySearchForm(data=data)
+        self.assertTrue(form.is_valid())
