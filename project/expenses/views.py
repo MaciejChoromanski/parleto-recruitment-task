@@ -3,7 +3,7 @@ from typing import Tuple, Dict
 from django.core.handlers.wsgi import WSGIRequest
 from django.db.models.query import QuerySet
 from django.http import HttpResponseRedirect
-from django.views.generic import DeleteView
+from django.views.generic import DeleteView, DetailView
 from django.views.generic.list import ListView
 
 from .forms import ExpenseSearchForm, CategorySearchForm
@@ -13,6 +13,7 @@ from .reports import (
     summary_per_year_month,
     summary_overall,
 )
+from .utils import get_expenses_amount
 
 
 class ExpenseListView(ListView):
@@ -105,9 +106,7 @@ class CategoryListView(ListView):
                 queryset = queryset.filter(name__icontains=name)
 
         for category in queryset:
-            category.expenses = Expense.objects.filter(
-                category__name=category.name
-            ).count()
+            category.expenses = get_expenses_amount(category)
 
         return super().get_context_data(
             form=form,
@@ -123,12 +122,9 @@ class CategoryDeleteView(DeleteView):
 
     def get_context_data(self, **kwargs) -> Dict:
         """Returns context for the category deletion"""
-        categories_expenses = Expense.objects.filter(
-            category=self.get_object()
-        ).count()
-
         return super().get_context_data(
-            categories_expenses=categories_expenses,
+            categories_expenses=get_expenses_amount(self.get_object()),
+            **kwargs
         )
 
     def delete(
@@ -138,3 +134,21 @@ class CategoryDeleteView(DeleteView):
         Expense.objects.filter(category=self.get_object()).delete()
 
         return super().delete(request, *args, **kwargs)
+
+
+class CategoryDetailView(DetailView):
+    """Detail view for the Category"""
+    model = Category
+    template_name = 'expenses/category_detail.html'
+
+    def get_context_data(self, **kwargs) -> Dict:
+        """Returns context for the category deletion"""
+        category = self.get_object()
+        queryset = Expense.objects.filter(category=category)
+
+        return super().get_context_data(
+            category=category,
+            categories_expenses=get_expenses_amount(self.get_object()),
+            summary_per_year_month=summary_per_year_month(queryset),
+            **kwargs
+        )
