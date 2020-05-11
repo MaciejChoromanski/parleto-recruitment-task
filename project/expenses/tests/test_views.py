@@ -7,6 +7,11 @@ from .utils import get_category, create_test_expenses, create_test_categories
 from ..models import Expense, Category
 
 
+def get_url(operation: str, pk: int) -> str:
+    """Returns url for editing a Category with a given pk"""
+    return reverse(f'expenses:category-{operation}', kwargs={'pk': pk})
+
+
 class ExpenseListViewTestCase(TestCase):
     """Tests for ExpenseListView"""
     EXPENSE_LIST = reverse('expenses:expense-list')
@@ -256,7 +261,7 @@ class CategoryUpdateViewTestCase(TestCase):
         """Tests if a Category is updated properly"""
         category = Category.objects.first()
         payload = {'name': 'new name'}
-        self.client.post(self._get_url(category.id), payload)
+        self.client.post(get_url('edit', category.id), payload)
         category.refresh_from_db()
         self.assertEqual(category.name, 'new name')
 
@@ -265,11 +270,37 @@ class CategoryUpdateViewTestCase(TestCase):
         category = Category.objects.first()
         category_name = category.name
         payload = {'name': ''}
-        self.client.post(self._get_url(category.id), payload)
+        self.client.post(get_url('edit', category.id), payload)
         category.refresh_from_db()
         self.assertEqual(category.name, category_name)
 
-    @staticmethod
-    def _get_url(pk: int) -> str:
-        """Returns url for editing a Category with a given pk"""
-        return reverse('expenses:category-edit', kwargs={'pk': pk})
+
+class CategoryDeleteViewTestCase(TestCase):
+    """Tests for CategoryDeleteView"""
+
+    def setUp(self) -> None:
+        """Set up for tests of CategoryDeleteView"""
+        create_test_expenses()
+        self.client = Client()
+
+    def test_get_context_data_expenses_calculation(self) -> None:
+        """
+        Tests if get_context_data properly calculates expenses for a category
+        """
+        category = Category.objects.get(name='necessary')
+        result = self.client.get(get_url('delete', category.id))
+        self.assertEqual(
+            result.context[0]['categories_expenses'],
+            Expense.objects.filter(category=category).count()
+        )
+
+    def test_delete_category_deleted(self) -> None:
+        """Tests if a Category and it's Expenses are deleted properly"""
+        category = Category.objects.first()
+        self.client.post(get_url('delete', category.id))
+        self.assertFalse(
+            Category.objects.filter(pk=category.id).exists()
+        )
+        self.assertEqual(
+            Expense.objects.filter(category=category).count(), 0
+        )

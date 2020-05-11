@@ -1,6 +1,9 @@
 from typing import Tuple, Dict
 
+from django.core.handlers.wsgi import WSGIRequest
 from django.db.models.query import QuerySet
+from django.http import HttpResponseRedirect
+from django.views.generic import DeleteView
 from django.views.generic.list import ListView
 
 from .forms import ExpenseSearchForm, CategorySearchForm
@@ -13,10 +16,13 @@ from .reports import (
 
 
 class ExpenseListView(ListView):
+    """List view for Expense model"""
     model = Expense
     paginate_by = 5
 
-    def get_context_data(self, *, object_list=None, **kwargs) -> Dict:
+    def get_context_data(
+            self, *, object_list: QuerySet = None, **kwargs
+    ) -> Dict:
         """Returns context for the expenses list"""
         queryset = object_list if object_list is not None else self.object_list
 
@@ -84,7 +90,7 @@ class ExpenseListView(ListView):
 
 
 class CategoryListView(ListView):
-    """List view for the Categories"""
+    """List view for the Category model"""
     model = Category
     paginate_by = 5
 
@@ -108,3 +114,27 @@ class CategoryListView(ListView):
             object_list=queryset,
             **kwargs
         )
+
+
+class CategoryDeleteView(DeleteView):
+    """Delete view for the Category"""
+    model = Category
+    template_name = 'expenses/model_delete.html'
+
+    def get_context_data(self, **kwargs) -> Dict:
+        """Returns context for the category deletion"""
+        categories_expenses = Expense.objects.filter(
+            category=self.get_object()
+        ).count()
+
+        return super().get_context_data(
+            categories_expenses=categories_expenses,
+        )
+
+    def delete(
+            self, request: WSGIRequest, *args, **kwargs
+    ) -> HttpResponseRedirect:
+        """Deletes all Expenses related to deleted Category"""
+        Expense.objects.filter(category=self.get_object()).delete()
+
+        return super().delete(request, *args, **kwargs)

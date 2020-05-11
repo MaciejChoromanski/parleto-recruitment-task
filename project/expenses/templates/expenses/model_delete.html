@@ -2,10 +2,13 @@
 
 {% block content %}
 
-<h1>Confirm removing "{{object}}"</h1>
+<h1>Remove "{{ object }}"?</h1>
+{% if categories_expenses %}
+  <h2>({{ categories_expenses }} expenses will be removed)</h2>
+{% endif %}
 <form method="post" action="">
   {% csrf_token %}
-  {{form.as_p}}
+  {{ form.as_p }}
   <button type="submit">delete</button>
 </form>
 

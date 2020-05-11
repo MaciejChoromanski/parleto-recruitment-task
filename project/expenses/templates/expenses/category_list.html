@@ -26,7 +26,7 @@
         <td>{{ obj.expenses|default:"0" }}</td>
         <td>
           <a href="{% url 'expenses:category-edit' obj.id %}">edit</a>
-          <a href="#">delete</a>
+          <a href="{% url 'expenses:category-delete' obj.id %}">delete</a>
         </td>
       </tr>
     {% empty %}

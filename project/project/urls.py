@@ -6,6 +6,5 @@ urlpatterns = [
          RedirectView.as_view(pattern_name='expenses:expense-list'),
          name='dashboard'),
     path('expenses/',
-         include(('expenses.urls', 'expenses'), namespace='expenses')
-         ),
+         include(('expenses.urls', 'expenses'), namespace='expenses')),
 ]
