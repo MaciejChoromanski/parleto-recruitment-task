@@ -27,20 +27,20 @@
       {% if form.cleaned_data.group_by == "date" %}
         {% ifchanged obj.date %}
         <tr>
-          <td colspan="4">{{obj.date}}</td>
+          <td colspan="4">{{ obj.date }}</td>
         </tr>
         {% endifchanged %}
       {% else %}
         {% ifchanged obj.category %}
         <tr>
-          <td colspan="4">{{obj.category}}</td>
+          <td colspan="4">{{ obj.category }}</td>
         </tr>
         {% endifchanged %}
       {% endif %}
       <tr>
         <td>{{ page_obj.start_index|add:forloop.counter0 }}.</td>
         <td>
-          <a href="{% url 'expenses:category-detaild' obj.category.id %}">
+          <a href="{% url 'expenses:category-detail' obj.category.id %}">
             {{ obj.category|default:"-" }}
           </a>
         </td>

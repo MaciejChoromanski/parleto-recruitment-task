@@ -47,6 +47,8 @@ class ExpenseListView(ListView):
             group_by = form.cleaned_data['group_by']
             queryset = self._get_ordered_queryset(queryset, group_by, '-pk')
 
+            self.paginate_by = form.cleaned_data['items_per_page'] or 5
+
         return super().get_context_data(
             form=form,
             object_list=queryset,
@@ -104,6 +106,8 @@ class CategoryListView(ListView):
             name = form.cleaned_data.get('name', '').strip()
             if name:
                 queryset = queryset.filter(name__icontains=name)
+
+            self.paginate_by = form.cleaned_data['items_per_page'] or 5
 
         for category in queryset:
             category.expenses = get_expenses_amount(category)

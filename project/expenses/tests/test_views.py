@@ -158,6 +158,17 @@ class ExpenseListViewTestCase(TestCase):
             date(2020, 5, 4)
         )
 
+    def test_get_context_date_items_per_page_provided(self) -> None:
+        """
+        Test what get_context_data_returns when items_per_page is provided
+        Expected result: proper pagination
+        """
+        payload = {'items_per_page': 1}
+        result = self.client.get(self.EXPENSE_LIST, payload)
+        self.assertEqual(
+            len(result.context[-1]['object_list']), 1
+        )
+
 
 class CategoryListViewTestCase(TestCase):
     """Tests for ExpenseListView"""
@@ -221,6 +232,17 @@ class CategoryListViewTestCase(TestCase):
         result = self.client.get(self.CATEGORY_LIST, payload)
         self.assertEqual(
             result.context[-1]['object_list'][0].expenses, 1
+        )
+
+    def test_get_context_date_items_per_page_provided(self) -> None:
+        """
+        Test what get_context_data_returns when items_per_page is provided
+        Expected result: proper pagination
+        """
+        payload = {'items_per_page': 1}
+        result = self.client.get(self.CATEGORY_LIST, payload)
+        self.assertEqual(
+            len(result.context[-1]['object_list']), 1
         )
 
 
