@@ -158,6 +158,24 @@ class ExpenseListViewTestCase(TestCase):
             date(2020, 5, 4)
         )
 
+    def test_get_context_data_items_per_page_provided(self) -> None:
+        """
+        Tests what get_context_data returns when items_per_page is provided
+        Expected result: proper pagination
+        """
+        payload = {'items_per_page': 1}
+        result = self.client.get(self.EXPENSE_LIST, payload)
+        self.assertEqual(
+            len(result.context[-1]['object_list']), 1
+        )
+
+    def test_get_context_data_total_objects_calculation(self) -> None:
+        """
+        Tests if get_context_data returns total_objects
+        """
+        result = self.client.get(self.EXPENSE_LIST)
+        self.assertIn('total_objects', result.context[0])
+
 
 class CategoryListViewTestCase(TestCase):
     """Tests for ExpenseListView"""
@@ -222,6 +240,24 @@ class CategoryListViewTestCase(TestCase):
         self.assertEqual(
             result.context[-1]['object_list'][0].expenses, 1
         )
+
+    def test_get_context_data_items_per_page_provided(self) -> None:
+        """
+        Tests what get_context_data_returns when items_per_page is provided
+        Expected result: proper pagination
+        """
+        payload = {'items_per_page': 1}
+        result = self.client.get(self.CATEGORY_LIST, payload)
+        self.assertEqual(
+            len(result.context[-1]['object_list']), 1
+        )
+
+    def test_get_context_data_total_objects_calculation(self) -> None:
+        """
+        Tests if get_context_data returns total_objects
+        """
+        result = self.client.get(self.CATEGORY_LIST)
+        self.assertIn('total_objects', result.context[0])
 
 
 class CategoryCreateViewTestCase(TestCase):

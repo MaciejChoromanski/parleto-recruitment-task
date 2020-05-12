@@ -28,6 +28,7 @@ class ExpenseSearchForm(forms.ModelForm):
     group_by = forms.ChoiceField(
         choices=_get_choices(CATEGORIES + ['date'])
     )
+    items_per_page = forms.IntegerField(min_value=1)
 
     class Meta:
         model = Expense
@@ -46,6 +47,7 @@ class CategorySearchForm(forms.Form):
           searching by the full name returned an error
     """
     name = forms.CharField(max_length=50)
+    items_per_page = forms.IntegerField(min_value=1)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

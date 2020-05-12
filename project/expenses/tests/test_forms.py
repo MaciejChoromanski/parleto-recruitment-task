@@ -66,6 +66,14 @@ class ExpenseSearchFormTestCase(TestCase):
         form = ExpenseSearchForm(data=data)
         self.assertFalse(form.is_valid())
 
+    def test_form_validation_items_per_page_provided(self) -> None:
+        """
+        Tests if a form is valid when provided with a items_per_page
+        """
+        data = {'items_per_page': 3}
+        form = ExpenseSearchForm(data=data)
+        self.assertTrue(form.is_valid())
+
 
 class CategorySearchFormTestCase(TestCase):
     """Tests for CategorySearchForm"""
@@ -75,5 +83,13 @@ class CategorySearchFormTestCase(TestCase):
         Tests if a form is valid when provided with a name
         """
         data = {'name': 'category'}
+        form = CategorySearchForm(data=data)
+        self.assertTrue(form.is_valid())
+
+    def test_form_validation_items_per_page_provided(self) -> None:
+        """
+        Tests if a form is valid when provided with a items_per_page
+        """
+        data = {'items_per_page': 3}
         form = CategorySearchForm(data=data)
         self.assertTrue(form.is_valid())
