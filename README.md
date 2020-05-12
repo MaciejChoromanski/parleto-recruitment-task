@@ -1,12 +1,36 @@
 # Parleto recruitment task
-Web application written with Python 3.8 and Django
+Web application written with Python 3.8 and Django, a recruitment task
 
 ## Table of contents
-1. [Installation](#installation)
-2. [Database](#database)
-2. [Tests and lint](#tests-and-lint)
-3. [Author](#author)
-4. [License](#license)
+1. [Required features](#required-features)
+2. [Installation](#installation)
+3. [Database](#database)
+4. [Tests and lint](#tests-and-lint)
+5. [Author](#author)
+6. [License](#license)
+
+## Required features
+List of features required for finishing this task:
+   1. Allow searching by date range in `expenses.ExpenseList`.
+   2. Allow searching by multiple categories in `expenses.ExpenseList`.
+   3. In `expenses.ExpenseList` add sorting by category and date (ascending and descending)
+   4. In `expenses.ExpenseList` add grouping by category name (ascending and descending)
+   5. In `expenses.ExpenseList` add total amount spent.
+
+   6. Add list view for `expenses.Category`.
+   7. Add number of expenses per category per row in `expenses.CategoryList`.
+
+   8. Add create view for `expenses.Category`.
+   9. Add update view for `expenses.Category`.
+   10. Add message for create/update in `expenses.Category` if name already exists
+
+   11. Add delete view for `expenses.Category`.
+   12. In `expenses.CategoryDelete` add total count of expenses that will be deleted.
+
+   13. Add detail view for `expenses.Category` with total summary per year-month.
+
+   14. Add option to change perPage items on list views.
+   15. Add total items to `_pagination.html`
 
 ## Installation
 These steps will help you set up the project on your machine. They were written with UNIX/UNIX-like based systems in mind.
