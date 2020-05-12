@@ -3,6 +3,7 @@ Web application written with Python 3.8 and Django
 
 ## Table of contents
 1. [Installation](#installation)
+2. [Database](#database)
 2. [Tests and lint](#tests-and-lint)
 3. [Author](#author)
 4. [License](#license)
@@ -34,6 +35,9 @@ Install requirements:
 ```
 pip install -r requirements.txt
 ```
+
+## Database
+These steps will help you prepare the demo data used in the app
 
 Run migrations:
 ```
