@@ -52,6 +52,7 @@ class ExpenseListView(ListView):
         return super().get_context_data(
             form=form,
             object_list=queryset,
+            total_objects=queryset.count(),
             summary_per_category=summary_per_category(queryset),
             summary_per_year_month=summary_per_year_month(queryset),
             summary_overall=summary_overall(queryset),
@@ -115,6 +116,7 @@ class CategoryListView(ListView):
         return super().get_context_data(
             form=form,
             object_list=queryset,
+            total_objects=queryset.count(),
             **kwargs
         )
 

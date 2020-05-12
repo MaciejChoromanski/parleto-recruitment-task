@@ -9,7 +9,7 @@
   {{ form.as_p }}
   <button type="submit">search</button>
 </form>
-<br>
+<hr/>
 <table border="1">
   {% if form.cleaned_data.group_by%}
     <thead>
@@ -93,6 +93,7 @@
     </tbody>
   {% endif %}
 </table>
+<br/>
 
 {% include "_pagination.html" %}
 <hr>
